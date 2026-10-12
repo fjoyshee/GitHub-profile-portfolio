@@ -1,5 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Farha Jabin Oyshee Portfolio</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Farha Jabin Oyshee · Product Manager</title><meta name="description" content="Farha Jabin Oyshee, Product Manager for WordPress, SaaS and AI products. PRDs, prototypes, case studies and KPI work."><meta name="author" content="Farha Jabin Oyshee"><meta property="og:type" content="website"><meta property="og:title" content="Farha Jabin Oyshee · Product Manager"><meta property="og:description" content="Farha Jabin Oyshee, Product Manager for WordPress, SaaS and AI products. PRDs, prototypes, case studies and KPI work."><meta name="twitter:card" content="summary"><meta name="theme-color" content="#2B47C9"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232B47C9'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' fill='white' text-anchor='middle'%3EFO%3C/text%3E%3C/svg%3E"></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <style>
@@ -72,6 +71,13 @@ section>.lbl{padding-top:8px}
 .row p b{color:var(--ink);font-weight:600}
 .row .ev{font-size:14px;color:var(--ink-2);margin-top:4px}
 .row .ev::before{content:"→ ";color:var(--accent)}
+.rows.cov{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;border-top:0}
+.rows.cov .row{grid-template-columns:1fr;gap:4px;padding-block:12px;align-content:start}
+.rows.cov .row h3{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rows.cov .row h3 small{display:inline;margin:0}
+.rows.cov .row .ev{margin-top:2px}
+@media (max-width:700px){.rows.cov{grid-template-columns:1fr}}
+
 .src{font-size:12.5px;color:var(--muted)}
 
 /* case studies */
@@ -202,7 +208,7 @@ dialog.viewer.wide .vw-b{flex:1;padding:0;display:block;overflow:hidden}
 <header class="top">
   <a class="mark" href="#top">farha.oyshee</a>
   <nav aria-label="Sections">
-    <a href="#coverage">Coverage</a><a href="#trends">2026</a><a href="#work">Work</a><a href="#samples">Samples</a><a href="#experience">Experience</a><a href="#contact">Contact</a>
+    <a href="#work">Work</a><a href="#samples">Samples</a><a href="#coverage">Coverage</a><a href="#experience">Experience</a><a href="#contact">Contact</a>
     <button class="theme" id="theme" type="button">Dark</button>
   </nav>
 </header>
@@ -223,43 +229,6 @@ dialog.viewer.wide .vw-b{flex:1;padding:0;display:block;overflow:hidden}
   <div><b>590+</b><span>templates shipped across two quarterly programs</span></div>
   <div><b>53→69.5%</b><span>sprint completion, Jan to Apr 2026</span></div>
 </div>
-
-<section id="coverage">
-  <span class="lbl">Coverage</span>
-  <div class="body">
-    <div class="head"><h2>Product management, end to end</h2><p>Every stage of the job, with the piece of work that proves it.</p></div>
-    <div class="rows">
-      <div class="row"><h3>Discovery<small>Users, market, demand</small></h3><div><p>Competitor teardowns, feature-request mining, market sizing.</p><p class="ev">WordPress booking market study that seeded Rox Appointment Booking; 43 customer requests turned into one backlog.</p></div></div>
-      <div class="row"><h3>Strategy<small>Where to play, how to win</small></h3><div><p>Market-entry theses and plans that survive real constraints.</p><p class="ev">Shopify entry strategy: 7 ranked opportunities, re-sequenced when the no-ML-team constraint surfaced.</p></div></div>
-      <div class="row"><h3>Pricing & packaging<small>Monetisation</small></h3><div><p>Freemium lines, tier design, competitor price benchmarks.</p><p class="ev">ElementsKit 4-tier restructure, mapped widget by widget against five competitors.</p></div></div>
-      <div class="row"><h3>Requirements<small>PRDs, stories, acceptance</small></h3><div><p>Specs written against the real codebase, so engineering builds without a meeting.</p><p class="ev">Quiz Analytics PRD v2, rewritten against MetForm 4.1.5 source after v1 specced data the plugin never captured.</p></div></div>
-      <div class="row"><h3>Prioritisation<small>What first, and why</small></h3><div><p>RICE and weighted scoring, checked against capacity.</p><p class="ev">14 ShopEngine gap features (~139 points) in a staged rollout. <a href="#lab">Try the scoring live</a>.</p></div></div>
-      <div class="row"><h3>Delivery<small>Sprints, capacity, risk</small></h3><div><p>Holiday-adjusted capacity models and Jira-ready breakdowns.</p><p class="ev">272-hour design capacity at 97% utilisation; 2026 campaigns broken into 17 epics and 357 tasks.</p></div></div>
-      <div class="row"><h3>Launch & GTM<small>Positioning, campaigns</small></h3><div><p>Landing-page PRDs, launch plans, campaign calendars.</p><p class="ev">Rox Appointment Booking: concept to live Free and Pro releases in Q2 2026.</p></div></div>
-      <div class="row"><h3>Growth & retention<small>Acquisition loops</small></h3><div><p>Templates as the acquisition engine; onboarding and dashboard work for retention.</p><p class="ev">216-template quarterly program across 9 designers; Q3 theme set to retention, polish and AI builders.</p></div></div>
-      <div class="row"><h3>Measurement<small>KPIs, OKRs, reporting</small></h3><div><p>A 12-KPI framework and a monthly reporting cycle, built from zero.</p><p class="ev">Sprint completion 53% → 69.5% in four cycles; Q2 bug fixes up 47% quarter on quarter.</p></div></div>
-      <div class="row"><h3>AI products<small>Agents, LLM features</small></h3><div><p>AI-native PRDs, model-agnostic design, build-vs-buy calls.</p><p class="ev">MetForm AI assistant; Kit MCP server so AI agents can build pages safely.</p></div></div>
-      <div class="row"><h3>Quality & compliance<small>Release confidence</small></h3><div><p>CMMI-aligned QA and IEEE 829 test planning.</p><p class="ev">136 test cases for the RDCFE release; CMMI Level 3 audits at Akij iBOS.</p></div></div>
-      <div class="row"><h3>Leadership<small>Stakeholders, team health</small></h3><div><p>Executive reviews, quarterly plans, evidence-based performance reviews.</p><p class="ev">Monthly health reports for 17–25 contributors; quarterly plans presented at townhall.</p></div></div>
-    </div>
-  </div>
-</section>
-
-<section id="trends">
-  <span class="lbl">2026</span>
-  <div class="body">
-    <div class="head"><h2>How product work is changing in 2026, and where I already work that way</h2><p>Six shifts product leaders keep naming this year, each paired with my own work.</p></div>
-    <div class="rows">
-      <div class="row"><h3>Agents inside products</h3><div><p>AI is moving from a chat box to agents that take actions inside the product.</p><p class="ev"><b>Kit MCP</b>: an MCP server with 60 specified tools so AI clients can build ElementsKit and GutenKit pages; <b>MetForm AI</b>: an agentic form-building assistant.</p></div></div>
-      <div class="row"><h3>Trust and safety first</h3><div><p>Governance, privacy and safety are now conditions for shipping AI, not follow-ups.</p><p class="ev">Kit MCP safety kernel: dry-run, typed confirmation, snapshot rollback, audit log. Daily Boost: HR sees only groups of 10 or more.</p></div></div>
-      <div class="row"><h3>Outcomes over launches</h3><div><p>Teams are judged on adoption and results, not on how much they ship.</p><p class="ev">A monthly KPI system that moved sprint completion and bug-fix rates, and a Q3 plan built around retention.</p></div></div>
-      <div class="row"><h3>Prototype the path</h3><div><p>AI tools make working prototypes cheap, so PMs show behaviour instead of describing it.</p><p class="ev">Clickable HTML prototypes for Kit MCP and Daily Boost; Uizard prototype for Cure. <a href="#samples">Try the Daily Boost prototypes live</a>.</p></div></div>
-      <div class="row"><h3>Model choice is a product decision</h3><div><p>Models change monthly; products need to swap providers and decide what to build versus buy.</p><p class="ev">MetForm AI runs on the user's own key across Claude, OpenAI, Gemini or Groq; a build-vs-buy framework for a team with no ML engineers.</p></div></div>
-      <div class="row"><h3>Every PM owns growth</h3><div><p>Distribution, pricing and monetisation sit with product, not only marketing.</p><p class="ev">ElementsKit pricing tiers, the template acquisition engine, and the BFCM and New Year campaign machine.</p></div></div>
-    </div>
-    <p class="src">Trend themes drawn from 2026 commentary by product leaders, including Product School's 2026 trends roundup.</p>
-  </div>
-</section>
 
 <section id="work">
   <span class="lbl">Selected work</span>
@@ -324,6 +293,27 @@ dialog.viewer.wide .vw-b{flex:1;padding:0;display:block;overflow:hidden}
     <div class="head"><h2>Documents you can open</h2><p>PRDs, prototypes, a financial model, decks and analyses from independent, course and team projects. Team work is marked.</p></div>
     <div class="fmt" id="fmt" role="group" aria-label="Filter samples by format"></div>
     <div id="groups" class="body" style="gap:32px"></div>
+  </div>
+</section>
+
+<section id="coverage">
+  <span class="lbl">Coverage</span>
+  <div class="body">
+    <div class="head"><h2>Product management, end to end</h2><p>Each stage of the job, with one piece of work as proof.</p></div>
+    <div class="rows cov">
+      <div class="row"><h3>Discovery<small>Users, market, demand</small></h3><div><p class="ev">WordPress booking market study that seeded Rox Appointment Booking; 43 customer requests turned into one backlog.</p></div></div>
+      <div class="row"><h3>Strategy<small>Where to play, how to win</small></h3><div><p class="ev">Shopify entry strategy: 7 ranked opportunities, re-sequenced when the no-ML-team constraint surfaced.</p></div></div>
+      <div class="row"><h3>Pricing & packaging<small>Monetisation</small></h3><div><p class="ev">ElementsKit 4-tier restructure, mapped widget by widget against five competitors.</p></div></div>
+      <div class="row"><h3>Requirements<small>PRDs, stories, acceptance</small></h3><div><p class="ev">Quiz Analytics PRD v2, rewritten against MetForm 4.1.5 source after v1 specced data the plugin never captured.</p></div></div>
+      <div class="row"><h3>Prioritisation<small>What first, and why</small></h3><div><p class="ev">14 ShopEngine gap features (~139 points) in a staged rollout. <a href="#lab">Try the scoring live</a>.</p></div></div>
+      <div class="row"><h3>Delivery<small>Sprints, capacity, risk</small></h3><div><p class="ev">272-hour design capacity at 97% utilisation; 2026 campaigns broken into 17 epics and 357 tasks.</p></div></div>
+      <div class="row"><h3>Launch & GTM<small>Positioning, campaigns</small></h3><div><p class="ev">Rox Appointment Booking: concept to live Free and Pro releases in Q2 2026.</p></div></div>
+      <div class="row"><h3>Growth & retention<small>Acquisition loops</small></h3><div><p class="ev">216-template quarterly program across 9 designers; Q3 theme set to retention, polish and AI builders.</p></div></div>
+      <div class="row"><h3>Measurement<small>KPIs, OKRs, reporting</small></h3><div><p class="ev">Sprint completion 53% → 69.5% in four cycles; Q2 bug fixes up 47% quarter on quarter.</p></div></div>
+      <div class="row"><h3>AI products<small>Agents, LLM features</small></h3><div><p class="ev">MetForm AI assistant; Kit MCP server so AI agents can build pages safely.</p></div></div>
+      <div class="row"><h3>Quality & compliance<small>Release confidence</small></h3><div><p class="ev">136 test cases for the RDCFE release; CMMI Level 3 audits at Akij iBOS.</p></div></div>
+      <div class="row"><h3>Leadership<small>Stakeholders, team health</small></h3><div><p class="ev">Monthly health reports for 17–25 contributors; quarterly plans presented at townhall.</p></div></div>
+    </div>
   </div>
 </section>
 
