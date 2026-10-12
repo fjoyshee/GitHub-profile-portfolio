@@ -1,0 +1,744 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Daily Boost Config Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Nunito:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: admin console — sticky section nav on the left, one working section on the right; top bar carries "acting as" role and draft/publish state */
+:root{
+  --bg:#F3F2F8; --surface:#FFFFFF; --sunk:#F8F7FC; --ink:#2A2940; --muted:#6B6A84; --line:#E4E2EF;
+  --teal:#6259B0; --teal-soft:#ECEAF8; --sage:#5E9A86; --sage-soft:#E3F1EB;
+  --ember:#B85F42; --ember-soft:#FBECE5; --on-accent:#FFFFFF;
+  --good:#3D8A6E; --good-soft:#E2F1EA; --warn:#9C6B1C; --warn-soft:#FAF1DE; --crit:#B04E66; --crit-soft:#F8E5EA;
+  --glow1:#E5E1F8; --glow2:#DFF0E9; --phone:#2A2940; --shadow:0 12px 32px -18px rgba(42,41,64,.28);
+  --f-display:"Fraunces",Georgia,"Hind Siliguri",serif;
+  --f-body:"Nunito","Hind Siliguri",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-bn:"Hind Siliguri","Nunito",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:20px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14132A; --surface:#1D1C37; --sunk:#18172F; --ink:#ECEAF8; --muted:#A4A2C2; --line:#302E50;
+  --teal:#AEA6F5; --teal-soft:#2A2752; --sage:#8FCDB8; --sage-soft:#1B3330;
+  --ember:#F2A88B; --ember-soft:#3B2630; --on-accent:#14132A;
+  --good:#86D0B1; --good-soft:#173329; --warn:#E9C177; --warn-soft:#382D17; --crit:#F3A0B4; --crit-soft:#3D2131;
+  --glow1:#25214D; --glow2:#142A2B; --phone:#05050C; --shadow:0 12px 32px -18px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14132A; --surface:#1D1C37; --sunk:#18172F; --ink:#ECEAF8; --muted:#A4A2C2; --line:#302E50;
+  --teal:#AEA6F5; --teal-soft:#2A2752; --sage:#8FCDB8; --sage-soft:#1B3330;
+  --ember:#F2A88B; --ember-soft:#3B2630; --on-accent:#14132A;
+  --good:#86D0B1; --good-soft:#173329; --warn:#E9C177; --warn-soft:#382D17; --crit:#F3A0B4; --crit-soft:#3D2131;
+  --glow1:#25214D; --glow2:#142A2B; --phone:#05050C; --shadow:0 12px 32px -18px rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14.5px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono);font-size:12.5px}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+
+/* top bar */
+.top{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between;padding-block:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--teal) 0 55%,var(--ember) 55%)}
+.brand b{font-family:var(--f-display);font-size:19px}
+.brand span{color:var(--muted);font-size:13px;display:block}
+.topctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acting{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:5px 6px 5px 12px}
+.acting span{font-size:12px;color:var(--muted);font-weight:600}
+select,input[type=text],input[type=number]{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:6px 9px;min-width:0}
+.acting select{border:0;font-weight:700;background:var(--sunk)}
+
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.c-teal{background:var(--teal-soft);color:var(--teal)}
+.c-ember{background:var(--ember-soft);color:var(--ember)}
+.c-good{background:var(--good-soft);color:var(--good)}
+.c-warn{background:var(--warn-soft);color:var(--warn)}
+.c-crit{background:var(--crit-soft);color:var(--crit)}
+.c-mute{background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+
+.btn{border:0;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13.5px;background:var(--teal);color:var(--on-accent);white-space:nowrap}
+.btn.ember{background:var(--ember)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:var(--surface);color:var(--crit);border:1px solid var(--line)}
+.btn.tiny{padding:4px 8px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* shell */
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:22px;align-items:start}
+nav.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;flex-direction:column;gap:2px}
+nav.side .grp{margin:12px 10px 4px}
+nav.side button{border:0;background:none;text-align:left;padding:8px 10px;border-radius:9px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+nav.side button[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:inset 3px 0 0 var(--teal)}
+nav.side button .dot{width:7px;height:7px;border-radius:50%;background:var(--ember)}
+@media (max-width:860px){.shell{grid-template-columns:minmax(0,1fr)}
+  nav.side{position:static;flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  nav.side .grp{display:none} nav.side button{white-space:nowrap}}
+main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.head h1{font-size:28px}
+.head p{margin:4px 0 0;color:var(--muted);max-width:72ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.panel h3{font-size:17px;margin-bottom:4px}
+.panel p.d{margin:0 0 12px;color:var(--muted);max-width:72ch}
+.ro svg{width:16px;height:16px;flex:none}
+.ro{display:flex;gap:10px;align-items:center;background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-weight:600;font-size:13.5px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.split{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1050px){.split{grid-template-columns:minmax(0,1fr)}}
+.stat b{font-family:var(--f-display);font-size:30px;line-height:1;display:block}
+.stat span{color:var(--muted);font-size:12.5px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+tr.grouprow td{background:var(--sunk);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* matrix */
+.mx th.r{writing-mode:initial;text-align:center;font-size:11px;min-width:84px}
+.mx td.p{min-width:220px}
+.mx td.p b{display:block;font-size:13.5px}
+.mx td.p span{font-size:12px;color:var(--muted)}
+.cell{border:1px solid transparent;border-radius:8px;padding:5px 6px;font-size:12px;font-weight:700;width:100%;display:flex;align-items:center;justify-content:center;gap:4px;min-height:30px}
+.cell.allow{background:var(--good-soft);color:var(--good)}
+.cell.cond{background:var(--warn-soft);color:var(--warn)}
+.cell.deny{background:var(--sunk);color:var(--muted)}
+.cell[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface) inset}
+.cell svg{width:11px;height:11px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px;color:var(--muted)}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 12px;font-weight:700;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"].allow{background:var(--good);color:var(--on-accent)}
+.seg button[aria-pressed="true"].cond{background:var(--warn);color:var(--on-accent)}
+.seg button[aria-pressed="true"].deny{background:var(--ink);color:var(--bg)}
+.checks{display:grid;gap:6px;margin-top:10px}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-size:13.5px}
+.checks label small{display:block;color:var(--muted);font-size:12px}
+.lockbox{display:flex;gap:8px;align-items:flex-start;background:var(--sunk);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px}
+.lockbox svg{flex:none;width:15px;height:15px;margin-top:2px;color:var(--ember)}
+
+/* views */
+.vx td{text-align:center}
+.vx td:first-child{text-align:left}
+.vx input[type=checkbox]{width:17px;height:17px;accent-color:var(--teal)}
+.vx td.warn{background:var(--warn-soft)}
+.preview{display:grid;grid-template-columns:200px minmax(0,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:240px}
+@media (max-width:600px){.preview{grid-template-columns:minmax(0,1fr)}}
+.preview .pn{background:var(--sunk);padding:12px;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line)}
+.preview .pn .app{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-top:8px}
+.preview .pn .it{padding:5px 8px;border-radius:7px;font-size:13px;font-weight:600}
+.preview .pn .it.land{background:var(--teal-soft);color:var(--teal)}
+.preview .pb{padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.vis{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1px solid var(--line);padding-bottom:6px}
+
+/* rules */
+.rule{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.rule.off{opacity:.6}
+.rule .rh{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.rule .rh input[type=text]{flex:1;min-width:160px;font-weight:600}
+.rid{font-family:var(--f-mono);font-weight:500;font-size:12px;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.cond{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cond select,.cond input{padding:4px 7px;font-size:13px}
+.cond .join{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.06em;width:34px;text-align:center}
+.picks{display:flex;flex-wrap:wrap;gap:5px}
+.pk{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 9px;font-size:12px;font-weight:600}
+.pk[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--on-accent)}
+.pk .ord{display:inline-block;font-family:var(--f-mono);font-size:10.5px;opacity:.85;margin-right:3px}
+.group{border:1px dashed var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.orsep{font-size:11px;font-weight:800;color:var(--ember);letter-spacing:.08em;text-align:center}
+.sim{display:flex;flex-direction:column;gap:10px}
+.sim .row{display:grid;grid-template-columns:70px 1fr 26px;gap:8px;align-items:center;font-size:13px;font-weight:600}
+.sim input[type=range]{width:100%;accent-color:var(--teal)}
+.out{display:grid;gap:6px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13.5px}
+.out div{display:flex;justify-content:space-between;gap:10px}
+.out b{text-align:right}
+
+.field{display:grid;gap:4px}
+.field>span{font-size:13px;font-weight:700}
+.field>small{color:var(--muted);font-size:12px}
+.toggle{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0}
+.toggle:last-child{border-bottom:0}
+.toggle div b{display:block}
+.toggle div small{color:var(--muted);font-size:12.5px}
+.sw{appearance:none;-webkit-appearance:none;width:40px;height:23px;border-radius:99px;background:var(--line);position:relative;flex:none;cursor:pointer;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--surface);transition:left .15s}
+.sw:checked{background:var(--teal)}
+.sw:checked::after{left:20px}
+.sw:disabled{cursor:not-allowed;opacity:.6}
+
+.val{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--line)}
+.val:last-child{border-bottom:0}
+.val i{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;margin-top:1px}
+.val i.ok{background:var(--good-soft);color:var(--good)}
+.val i.w{background:var(--warn-soft);color:var(--warn)}
+.val i.e{background:var(--crit-soft);color:var(--crit)}
+.verdict{border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.verdict b{font-family:var(--f-display);font-size:22px}
+.verdict.yes{background:var(--good-soft);color:var(--good)}
+.verdict.no{background:var(--crit-soft);color:var(--crit)}
+.verdict span{color:var(--ink);font-size:13.5px}
+pre.json{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:420px;overflow:auto;font-family:var(--f-mono);font-size:12px;margin:0;white-space:pre}
+.log{display:flex;flex-direction:column}
+.log .e{display:grid;grid-template-columns:72px 120px minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+@media (max-width:600px){.log .e{grid-template-columns:minmax(0,1fr)}}
+.log .e:last-child{border-bottom:0}
+.rcard{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.rcard .top2{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.rcard h3{font-size:16px}
+.rcard p{margin:0;font-size:13px;color:var(--muted)}
+.rcard .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:13.5px;z-index:20;max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---- calm wellness layer ---- */
+body{background:radial-gradient(900px 520px at 6% -8%,var(--glow1),transparent 70%),radial-gradient(800px 520px at 100% 0%,var(--glow2),transparent 70%),var(--bg);background-attachment:fixed;line-height:1.55}
+h1,h2,h3{font-weight:560;font-variation-settings:"SOFT" 100,"opsz" 48;letter-spacing:-.005em}
+.top .brand{margin-right:auto}
+.brand b{font-family:var(--f-display);font-weight:600;font-variation-settings:"SOFT" 100}
+.mark{border-radius:50%!important;background:radial-gradient(circle at 34% 30%,var(--surface) 0 8%,var(--teal-soft) 26%,var(--teal) 68%,var(--sage) 100%)!important;animation:orb 9s ease-in-out infinite}
+@keyframes orb{50%{transform:scale(1.1)}}
+.btn{border-radius:999px;color:var(--on-accent);transition:transform .15s ease,background-color .2s,box-shadow .2s}
+.btn:not(:disabled):hover{box-shadow:0 6px 16px -8px color-mix(in oklab,var(--teal) 70%,transparent)}
+.btn:not(:disabled):active{transform:scale(.98)}
+.card,.panel,.kpi,.rcard{border-radius:var(--r);border-color:color-mix(in oklab,var(--line) 70%,transparent);box-shadow:var(--shadow)}
+.seg{box-shadow:var(--shadow)}
+.modebtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px;box-shadow:var(--shadow)}
+.modebtn svg{width:16px;height:16px;color:var(--teal)}
+.toast{border-radius:999px!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="brand"><div class="mark" aria-hidden="true"></div><div><b>Daily Boost Config</b><span>Roles, views, permissions and condition rules · prototype</span></div></div>
+  <div class="topctl">
+    <label class="acting" for="acting"><span>Acting as</span><select id="acting"></select></label>
+    <span id="state"></span>
+    <button class="modebtn" id="modebtn" type="button"></button>
+  </div>
+</header>
+<div class="shell">
+  <nav class="side" id="nav" aria-label="Sections"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+/* ================= catalog: permissions, conditions, views ================= */
+const PERMS=[
+ {g:'Employee data',id:'checkin.own',n:'Own check-ins & Boosts',d:'Submit check-ins, see own history and Boosts'},
+ {g:'Employee data',id:'checkin.ind',n:'Other people’s check-ins',d:'Individual scores of any other employee'},
+ {g:'Employee data',id:'sessions.own',n:'Book own counsellor sessions',d:'Book, reschedule and cancel own sessions'},
+ {g:'Clinical',id:'sessions.clin',n:'Referral queue & bookings',d:'Guardrail referrals and session bookings'},
+ {g:'Clinical',id:'notes.clin',n:'Clinical session notes',d:'Notes written by the counsellor'},
+ {g:'Insights',id:'agg.team',n:'Team aggregates',d:'Team stress, engagement and trends'},
+ {g:'Insights',id:'agg.org',n:'Org-wide aggregates',d:'Heatmap, KPIs and top trends'},
+ {g:'Insights',id:'reports.export',n:'Export reports',d:'Download aggregate reports (CSV/PDF)'},
+ {g:'Content & rules',id:'catalog.edit',n:'Edit Boost catalog',d:'Write and translate Boost content'},
+ {g:'Content & rules',id:'cfg.clinical',n:'Edit Boost & guardrail rules',d:'Condition rules, risk day, guardrail thresholds'},
+ {g:'Administration',id:'users.manage',n:'Invite users & manage teams',d:'Enrolment, team membership'},
+ {g:'Administration',id:'roles.assign',n:'Assign roles to users',d:'Change which role a person holds'},
+ {g:'Administration',id:'cfg.access',n:'Edit roles, permissions & views',d:'This matrix, role views and custom roles'},
+ {g:'Administration',id:'cfg.privacy',n:'Edit privacy & data settings',d:'Minimum group size, retention, exports'},
+ {g:'Administration',id:'cfg.publish',n:'Approve & publish configuration',d:'Make a draft live for everyone'},
+ {g:'Administration',id:'audit.read',n:'Read audit log',d:'Who changed what, and data-access events'},
+ {g:'Administration',id:'tenant.manage',n:'Manage client organisations',d:'Create tenants, billing, SSO'}
+];
+const P=id=>PERMS.find(p=>p.id===id);
+const CONDS={
+ own:{n:'Own records only',d:'The record belongs to the person asking',ctx:'own'},
+ team:{n:'Own team only',d:'Limited to the team they lead or belong to',ctx:'sameTeam'},
+ minN:{n:'Group ≥ minimum size',d:'Group has at least the minimum size set in Privacy',ctx:'groupSize'},
+ consent:{n:'Employee consented',d:'Employee booked a session or accepted a referral',ctx:'consent'},
+ assigned:{n:'Assigned clinician',d:'They are the clinician assigned to this employee',ctx:'assigned'},
+ aggregate:{n:'Aggregated, no identifiers',d:'Output contains no names, IDs or free text',ctx:'aggregate'},
+ ownOrg:{n:'Own organisation',d:'Limited to the client organisation they belong to',ctx:'sameOrg'},
+ hrRoles:{n:'HR-side roles only',d:'Can assign Employee, Team Lead, HR Manager or HR Admin only',ctx:'targetHR'},
+ twoPerson:{n:'Second approver',d:'Someone in a different role made the change',ctx:'secondApprover'},
+ breakGlass:{n:'Break-glass',d:'Written reason, 24-hour expiry, logged and reviewed by the DPO',ctx:'reason'}
+};
+const VIEWS=[
+ {app:'Employee app',id:'emp.today',n:'Today (check-in & Boost)',req:'checkin.own'},
+ {app:'Employee app',id:'emp.progress',n:'Progress',req:'checkin.own'},
+ {app:'Employee app',id:'emp.explore',n:'Explore library',req:'checkin.own'},
+ {app:'Employee app',id:'emp.support',n:'Support & booking',req:'sessions.own'},
+ {app:'HR dashboard',id:'hr.team',n:'My team overview',req:'agg.team'},
+ {app:'HR dashboard',id:'hr.dash',n:'Org dashboard',req:'agg.org'},
+ {app:'HR dashboard',id:'hr.reports',n:'Reports & exports',req:'reports.export'},
+ {app:'HR dashboard',id:'hr.users',n:'People & teams',req:'users.manage'},
+ {app:'Clinical console',id:'clin.queue',n:'Referral queue',req:'sessions.clin'},
+ {app:'Clinical console',id:'clin.notes',n:'Session notes',req:'notes.clin'},
+ {app:'Clinical console',id:'clin.rules',n:'Rule editor',req:'cfg.clinical'},
+ {app:'Clinical console',id:'clin.catalog',n:'Boost catalog',req:'catalog.edit'},
+ {app:'Admin console',id:'adm.access',n:'Roles & permissions',req:'cfg.access'},
+ {app:'Admin console',id:'adm.privacy',n:'Privacy settings',req:'cfg.privacy'},
+ {app:'Admin console',id:'adm.audit',n:'Audit log',req:'audit.read'},
+ {app:'Admin console',id:'adm.tenants',n:'Organisations',req:'tenant.manage'}
+];
+const BOOSTS={box:'Box breathing',ground:'5-4-3-2-1 grounding',stretch:'Desk stretch reset',walk:'Daylight walk',scan:'Body scan rest',wind:'Wind-down plan',grat:'Three good things',thanks:'Thank a teammate',cha:'Mindful cha break',park:'Worry parking'};
+const FIELDS={energy:'Energy',stress:'Stress',sleep:'Sleep'};
+const OPS={'>=':'≥','<=':'≤','=':'=','>':'>','<':'<'};
+const KINDS={employee:'Employee',employer:'Employer-side',clinical:'Clinical',platform:'Platform',oversight:'Oversight'};
+
+/* ================= default configuration (from proposal) ================= */
+const ROLE_SEED=[
+ {id:'employee',n:'Employee',kind:'employee',scope:'Self',d:'Checks in daily, does Boosts, books counsellor sessions.'},
+ {id:'teamlead',n:'Team Lead',kind:'employer',scope:'Own team',d:'Sees anonymised wellbeing of the team they lead, when the team is large enough.'},
+ {id:'hrmgr',n:'HR Manager',kind:'employer',scope:'Organisation',d:'Monitors org-wide engagement and stress trends, plans initiatives.'},
+ {id:'hradmin',n:'HR Admin',kind:'employer',scope:'Organisation',d:'HR Manager access plus enrolment, teams and HR-side role assignment.'},
+ {id:'clinician',n:'Clinician',kind:'clinical',scope:'Assigned employees',d:'Counsellor. Handles referrals and sessions; drafts rule and content changes.'},
+ {id:'clinlead',n:'Clinical Lead',kind:'clinical',scope:'All clients',d:'Owns the rules engine and guardrail. Approves clinical changes.'},
+ {id:'platform',n:'Platform Admin',kind:'platform',scope:'All clients',d:'Vendor admin. Access model, privacy settings, tenants. No clinical content.'},
+ {id:'dpo',n:'Data Protection Officer',kind:'oversight',scope:'All clients',d:'Reviews audit log, break-glass access and data requests.'}
+];
+const A=(...c)=>c.length?{v:'cond',c}:{v:'allow',c:[]}, D={v:'deny',c:[]};
+const MATRIX_SEED={
+ employee:{'checkin.own':A(),'sessions.own':A()},
+ teamlead:{'checkin.own':A(),'sessions.own':A(),'agg.team':A('team','minN')},
+ hrmgr:{'checkin.own':A(),'sessions.own':A(),'agg.team':A('minN'),'agg.org':A('ownOrg','minN'),'reports.export':A('ownOrg','aggregate','minN')},
+ hradmin:{'checkin.own':A(),'sessions.own':A(),'agg.team':A('minN'),'agg.org':A('ownOrg','minN'),'reports.export':A('ownOrg','aggregate','minN'),'users.manage':A('ownOrg'),'roles.assign':A('ownOrg','hrRoles'),'audit.read':A('ownOrg')},
+ clinician:{'checkin.own':A(),'checkin.ind':A('consent','assigned'),'sessions.own':A(),'sessions.clin':A('assigned'),'notes.clin':A('assigned'),'agg.org':A('aggregate','minN'),'catalog.edit':A(),'cfg.clinical':A()},
+ clinlead:{'checkin.own':A(),'checkin.ind':A('consent','assigned'),'sessions.own':A(),'sessions.clin':A(),'notes.clin':A('assigned'),'agg.org':A('aggregate','minN'),'reports.export':A('aggregate','minN'),'catalog.edit':A(),'cfg.clinical':A(),'cfg.publish':A('twoPerson'),'audit.read':A()},
+ platform:{'checkin.ind':A('breakGlass'),'agg.org':A('aggregate','minN'),'users.manage':A(),'roles.assign':A(),'cfg.access':A(),'cfg.privacy':A(),'cfg.publish':A('twoPerson'),'audit.read':A(),'tenant.manage':A()},
+ dpo:{'checkin.ind':A('breakGlass'),'agg.org':A('aggregate','minN'),'reports.export':A('aggregate','minN'),'cfg.privacy':A('twoPerson'),'audit.read':A()}
+};
+const VIEW_SEED={
+ employee:{v:['emp.today','emp.progress','emp.explore','emp.support'],land:'emp.today'},
+ teamlead:{v:['emp.today','emp.progress','emp.explore','emp.support','hr.team'],land:'emp.today'},
+ hrmgr:{v:['emp.today','emp.progress','emp.explore','emp.support','hr.team','hr.dash','hr.reports'],land:'hr.dash'},
+ hradmin:{v:['emp.today','emp.progress','emp.explore','emp.support','hr.team','hr.dash','hr.reports','hr.users','adm.audit'],land:'hr.dash'},
+ clinician:{v:['emp.today','emp.support','clin.queue','clin.notes','clin.rules','clin.catalog'],land:'clin.queue'},
+ clinlead:{v:['emp.today','emp.support','clin.queue','clin.notes','clin.rules','clin.catalog','hr.dash','adm.audit'],land:'clin.queue'},
+ platform:{v:['adm.access','adm.privacy','adm.audit','adm.tenants','hr.users','hr.dash'],land:'adm.access'},
+ dpo:{v:['adm.audit','adm.privacy','hr.dash'],land:'adm.audit'}
+};
+const RULE_SEED=[
+ {id:'R1',n:'High stress + low energy',on:true,m:'all',c:[{f:'stress',op:'>=',v:4},{f:'energy',op:'<=',v:2}],p:['box','ground']},
+ {id:'R2',n:'Poor sleep',on:true,m:'all',c:[{f:'sleep',op:'<=',v:2}],p:['scan','wind']},
+ {id:'R3',n:'High stress',on:true,m:'all',c:[{f:'stress',op:'>=',v:4}],p:['ground','park','box']},
+ {id:'R4',n:'Low energy',on:true,m:'all',c:[{f:'energy',op:'<=',v:2}],p:['walk','stretch']},
+ {id:'R5',n:'Moderate stress',on:true,m:'all',c:[{f:'stress',op:'=',v:3}],p:['park','cha','stretch']},
+ {id:'R6',n:'Feeling good',on:true,m:'all',c:[{f:'stress',op:'<=',v:2},{f:'energy',op:'>=',v:4}],p:['grat','thanks']},
+ {id:'R7',n:'Default',on:true,m:'all',c:[],p:['cha','walk','thanks']}
+];
+/* invariants that no configuration can change */
+function lockOf(role,perm){
+  const k=role.kind;
+  if(k==='employer'&&['checkin.ind','sessions.clin','notes.clin'].includes(perm))return{v:'deny',c:[],why:'Employers never see individual scores, referrals or clinical notes (proposal: "Zero individual data sharing").'};
+  if(k==='platform'&&perm==='notes.clin')return{v:'deny',c:[],why:'Vendor staff never read clinical notes.'};
+  if(k==='employee'&&perm==='checkin.own')return{v:'allow',c:[],why:'Employees always own their check-in data.'};
+  if(role.id==='platform'&&perm==='cfg.access')return{v:'allow',c:[],why:'Lock-out protection: at least one role must be able to edit access.'};
+  if((k==='employee'||k==='employer')&&perm==='cfg.publish')return{v:'deny',c:[],why:'Only clinical or platform roles can publish configuration.'};
+  return null;
+}
+function applyLocks(cfg){cfg.roles.forEach(r=>PERMS.forEach(p=>{const l=lockOf(r,p.id);if(l)cfg.matrix[r.id][p.id]={v:l.v,c:[]};}));}
+function DEF(){
+  const cfg={roles:clone(ROLE_SEED),matrix:{},views:{},rules:clone(RULE_SEED),
+    risk:[[{f:'stress',op:'=',v:5}],[{f:'stress',op:'>=',v:4},{f:'sleep',op:'<=',v:2}],[{f:'stress',op:'>=',v:4},{f:'energy',op:'<=',v:2}]],
+    guard:{days:3,consecutive:true,snooze:'day',resolveDays:3,surfaces:['Today','Support'],emergency:'999',session:30,notifyHR:false},
+    privacy:{minN:10,retention:365,exportAgg:true,suppressFree:true,reminder:'12:30',reminderOptIn:true}};
+  cfg.roles.forEach(r=>{cfg.matrix[r.id]={};PERMS.forEach(p=>cfg.matrix[r.id][p.id]=clone(MATRIX_SEED[r.id][p.id]||D));cfg.views[r.id]=clone(VIEW_SEED[r.id]);});
+  applyLocks(cfg);return cfg;
+}
+const USERS_SEED=[
+ {n:'Rafiq Hasan',team:'Engineering',role:'employee'},{n:'Sadia Rahman',team:'Engineering',role:'teamlead'},
+ {n:'Farzana Akter',team:'People Ops',role:'hrmgr'},{n:'Imran Chowdhury',team:'People Ops',role:'hradmin'},
+ {n:'Nusrat Jahan',team:'Clinical partner',role:'clinician'},{n:'Dr. Tanvir Ahmed',team:'Clinical partner',role:'clinlead'},
+ {n:'Arif Kabir',team:'Vendor',role:'platform'},{n:'Mehnaz Sultana',team:'Legal',role:'dpo'}
+];
+
+/* ================= state ================= */
+const KEY='dailyboost-config-v1';
+function freshState(){const d=DEF();return{published:d,draft:clone(d),version:1,pending:null,
+  history:[{v:1,at:stamp(),by:'Platform Admin',note:'Initial configuration from feature proposal'}],
+  audit:[{at:stamp(),by:'Platform Admin',a:'Published v1',d:'Initial configuration from feature proposal'}],
+  users:clone(USERS_SEED),acting:'platform',sec:'overview',sel:{role:'hrmgr',perm:'agg.org'},preview:'hrmgr',
+  sim:{energy:2,stress:4,sleep:2,yday:'',prior:2},tester:{role:'hrmgr',perm:'checkin.ind',ctx:{own:false,sameTeam:true,groupSize:12,consent:false,assigned:false,aggregate:true,sameOrg:true,targetHR:true,secondApprover:false,reason:''}}};}
+function stamp(){return new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+let S;try{S=JSON.parse(localStorage.getItem(KEY));}catch(e){}
+if(!S||!S.draft)S=freshState();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const role=(cfg,id)=>cfg.roles.find(r=>r.id===id);
+const rname=id=>(role(S.draft,id)||role(S.published,id)||{n:id}).n;
+const dirty=()=>JSON.stringify(S.draft)!==JSON.stringify(S.published);
+function log(a,d){S.audit.unshift({at:stamp(),by:rname(S.acting),a,d:d||''});S.audit=S.audit.slice(0,120);}
+let toastT;function toast(m){let t=$('#toast');if(t)t.remove();t=document.createElement('div');t.className='toast';t.id='toast';t.textContent=m;document.body.appendChild(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2600);}
+
+/* ================= permission engine ================= */
+function can(cfg,roleId,permId,ctx){
+  const cell=(cfg.matrix[roleId]||{})[permId]||D;
+  if(cell.v==='deny')return{ok:false,cell,unmet:[],why:'Denied for this role'};
+  if(cell.v==='allow')return{ok:true,cell,unmet:[],why:'Allowed without conditions'};
+  const unmet=cell.c.filter(k=>{
+    const x=CONDS[k].ctx;
+    if(k==='minN')return !(+ctx.groupSize>=cfg.privacy.minN);
+    if(k==='breakGlass')return !(ctx.reason&&ctx.reason.trim().length>=10);
+    return !ctx[x];
+  });
+  return{ok:!unmet.length,cell,unmet,why:unmet.length?'Conditions not met':'All conditions met'};
+}
+/* what the acting role may do in this console (uses PUBLISHED access model) */
+const UICTX={own:true,sameTeam:true,groupSize:999,consent:true,assigned:true,aggregate:true,sameOrg:true,targetHR:true,secondApprover:true,reason:'console'};
+function mayEdit(perm){const cell=(S.published.matrix[S.acting]||{})[perm]||D;if(cell.v==='deny')return false;return !cell.c.includes('breakGlass');}
+function mayPublish(){const cell=(S.published.matrix[S.acting]||{})['cfg.publish']||D;if(cell.v==='deny')return{ok:false,why:'Your role cannot publish.'};
+  if(!S.pending)return{ok:false,why:'Submit the draft for review first.'};
+  if(cell.c.includes('twoPerson')&&S.pending.byRole===S.acting)return{ok:false,why:'Two-person rule: someone in a different role must approve.'};
+  return{ok:true};}
+const SECPERM={roles:'cfg.access',perms:'cfg.access',views:'cfg.access',rules:'cfg.clinical',guard:'cfg.clinical',privacy:'cfg.privacy'};
+function edit(sec,fn,a,d){
+  const perm=SECPERM[sec];
+  if(perm&&!mayEdit(perm)){toast(`${rname(S.acting)} can't edit this. Needs "${P(perm).n}".`);render();return;}
+  fn(S.draft);applyLocks(S.draft);
+  if(S.pending){S.pending=null;log('Review reset','Draft changed after it was submitted');}
+  log(a,d);render();
+}
+
+/* ================= rules engine ================= */
+const test=(c,x)=>{const a=x[c.f],b=+c.v;return c.op==='>='?a>=b:c.op==='<='?a<=b:c.op==='='?a===b:c.op==='>'?a>b:a<b;};
+const ruleMatch=(r,x)=>!r.c.length||(r.m==='all'?r.c.every(c=>test(c,x)):r.c.some(c=>test(c,x)));
+function pickBoost(cfg,x,yday){const r=cfg.rules.find(r=>r.on&&ruleMatch(r,x));if(!r)return{rule:null,boost:null};const o=r.p.filter(p=>p!==yday);return{rule:r,boost:o[0]||r.p[0]||null};}
+function riskGroup(cfg,x){return cfg.risk.findIndex(g=>g.length&&g.every(c=>test(c,x)));}
+const condText=c=>`${FIELDS[c.f]} ${OPS[c.op]} ${c.v}`;
+
+/* ================= validation ================= */
+function validate(cfg){
+  const out=[];
+  cfg.roles.forEach(r=>{
+    const v=cfg.views[r.id];
+    if(!v.v.length)out.push({lv:'e',t:`${r.n} has no screens. They would see an empty app.`,sec:'views'});
+    if(v.v.length&&!v.v.includes(v.land))out.push({lv:'e',t:`${r.n}'s landing screen is not one of their enabled screens.`,sec:'views'});
+    v.v.forEach(id=>{const vw=VIEWS.find(x=>x.id===id);if(cfg.matrix[r.id][vw.req].v==='deny')out.push({lv:'w',t:`${r.n} can open "${vw.n}" but "${P(vw.req).n}" is denied, so it will be empty.`,sec:'views'});});
+  });
+  if(!cfg.roles.some(r=>cfg.matrix[r.id]['cfg.publish'].v!=='deny'))out.push({lv:'e',t:'No role can publish configuration.',sec:'perms'});
+  if(cfg.roles.filter(r=>cfg.matrix[r.id]['cfg.publish'].v!=='deny').length<2)out.push({lv:'w',t:'Only one role can publish, so the two-person rule cannot be met.',sec:'perms'});
+  const on=cfg.rules.filter(r=>r.on);
+  if(!on.length)out.push({lv:'e',t:'All Boost rules are switched off. No Boost would be served.',sec:'rules'});
+  else if(on[on.length-1].c.length)out.push({lv:'e',t:`The last active rule (${on[on.length-1].id}) has conditions. Add a catch-all rule so every check-in gets a Boost.`,sec:'rules'});
+  cfg.rules.forEach(r=>{if(r.on&&!r.p.length)out.push({lv:'e',t:`${r.id} "${r.n}" has no Boost options.`,sec:'rules'});if(r.on&&r.p.length===1)out.push({lv:'w',t:`${r.id} has one Boost option, so it will repeat on consecutive days.`,sec:'rules'});});
+  const seen=[];on.forEach((r,i)=>{if(i<on.length-1&&!r.c.length)out.push({lv:'w',t:`${r.id} has no conditions, so every rule below it is unreachable.`,sec:'rules'});});
+  if(!cfg.risk.some(g=>g.length))out.push({lv:'e',t:'Heavy day has no conditions, so support would never be offered.',sec:'guard'});
+  if(cfg.guard.days<2||cfg.guard.days>7)out.push({lv:'e',t:'The support offer must need between 2 and 7 heavy days.',sec:'guard'});
+  if(cfg.privacy.minN<5)out.push({lv:'e',t:'Minimum group size cannot go below 5.',sec:'privacy'});
+  else if(cfg.privacy.minN<10)out.push({lv:'w',t:`Minimum group size is ${cfg.privacy.minN}, below the proposal's 10.`,sec:'privacy'});
+  return out;
+}
+
+/* ================= render ================= */
+const NAV=[
+ {g:'Setup',items:[['overview','Overview'],['roles','Roles & users'],['perms','Permissions'],['views','Role views']]},
+ {g:'Condition rules',items:[['rules','Boost rules'],['guard','Heavy days & support'],['privacy','Privacy & data']]},
+ {g:'Verify & ship',items:[['tester','Access tester'],['publish','Publish & audit']]}
+];
+function render(){
+  const errs=validate(S.draft);
+  $('#acting').innerHTML=S.published.roles.map(r=>`<option value="${r.id}" ${r.id===S.acting?'selected':''}>${esc(r.n)}</option>`).join('');
+  $('#state').innerHTML=S.pending?`<span class="chip c-warn">In review · v${S.version+1}</span>`:dirty()?`<span class="chip c-ember">Unpublished draft</span>`:`<span class="chip c-good">Live · v${S.version}</span>`;
+  const secDirty=k=>{const m={roles:['roles'],perms:['matrix'],views:['views'],rules:['rules'],guard:['risk','guard'],privacy:['privacy']}[k];return m&&m.some(x=>JSON.stringify(S.draft[x])!==JSON.stringify(S.published[x]));};
+  $('#nav').innerHTML=NAV.map(g=>`<div class="grp label">${g.g}</div>`+g.items.map(([k,n])=>`<button data-sec="${k}" ${S.sec===k?'aria-current="page"':''}><span>${n}</span>${secDirty(k)?'<i class="dot" title="Changed in draft"></i>':''}</button>`).join('')).join('');
+  $('#main').innerHTML=({overview,roles:rolesView,perms:permsView,views:viewsView,rules:rulesView,guard:guardView,privacy:privacyView,tester:testerView,publish:publishView})[S.sec](errs);
+  save();
+}
+function ro(perm){return mayEdit(perm)?'':`<div class="ro">${LOCK}<span>Read-only as ${esc(rname(S.acting))}. Editing needs "${P(perm).n}" in the live configuration.</span></div>`;}
+const dis=perm=>mayEdit(perm)?'':'disabled';
+const head=(t,p)=>`<div class="head"><h1>${t}</h1><p>${p}</p></div>`;
+const cellLabel=c=>c.v==='allow'?'Allow':c.v==='cond'?'If…':'Deny';
+
+/* ---------- Overview ---------- */
+function overview(errs){
+  const cfg=S.draft;
+  const e=errs.filter(x=>x.lv==='e').length,w=errs.filter(x=>x.lv==='w').length;
+  const sens=['checkin.ind','agg.team','agg.org','notes.clin','cfg.publish'];
+  return head('Configuration overview','Who can do what in Daily Boost, which screens each role gets, and the condition rules that pick Boosts and decide when to gently offer a counsellor. Changes are drafted, reviewed by a second role, then published.')+
+  `<section class="grid g4">
+    <div class="panel stat"><b class="num">${cfg.roles.length}</b><span>Roles (${cfg.roles.filter(r=>r.custom).length} custom)</span></div>
+    <div class="panel stat"><b class="num">${PERMS.length}</b><span>Permissions across ${new Set(PERMS.map(p=>p.g)).size} areas</span></div>
+    <div class="panel stat"><b class="num">${cfg.rules.filter(r=>r.on).length}</b><span>Active Boost rules</span></div>
+    <div class="panel stat"><b class="num">${cfg.privacy.minN}</b><span>Minimum group size</span></div>
+  </section>
+  <section class="panel"><h3>Health check</h3><p class="d">${e?`${e} error${e>1?'s':''} block publishing.`:'Nothing blocks publishing.'} ${w?`${w} warning${w>1?'s':''} to review.`:''}</p>
+   ${errs.length?errs.map(x=>`<div class="val"><i class="${x.lv}">${x.lv==='e'?'!':'?'}</i><span>${esc(x.t)} <button class="btn tiny ghost" data-sec="${x.sec}">Fix</button></span></div>`).join(''):`<div class="val"><i class="ok">✓</i><span>All checks pass.</span></div>`}</section>
+  <section class="panel"><h3>Access at a glance</h3><p class="d">Sensitive permissions per role. Click a cell to edit it.</p>
+   <div class="tw"><table class="mx"><tr><th>Role</th><th>Lands on</th><th>Screens</th>${sens.map(s=>`<th>${P(s).n}</th>`).join('')}</tr>
+   ${cfg.roles.map(r=>`<tr><td><b>${esc(r.n)}</b></td><td>${esc((VIEWS.find(v=>v.id===cfg.views[r.id].land)||{n:'—'}).n)}</td><td class="num">${cfg.views[r.id].v.length}</td>
+     ${sens.map(s=>{const c=cfg.matrix[r.id][s];return `<td><button class="cell ${c.v}" data-jump="${r.id}|${s}" title="${esc(c.c.map(k=>CONDS[k].n).join(' + '))}">${lockOf(r,s)?LOCK:''}${cellLabel(c)}</button></td>`;}).join('')}</tr>`).join('')}</table></div></section>`;
+}
+
+/* ---------- Roles & users ---------- */
+function rolesView(){
+  const cfg=S.draft, ed=mayEdit('cfg.access');
+  const cards=cfg.roles.map(r=>{
+    const users=S.users.filter(u=>u.role===r.id).length;
+    return `<div class="rcard"><div class="top2"><div>${r.custom?`<input type="text" id="rn-${r.id}" data-rename="${r.id}" value="${esc(r.n)}" ${dis('cfg.access')} style="font-weight:700;font-family:var(--f-display);font-size:16px;width:100%">`:`<h3>${esc(r.n)}</h3>`}</div>
+      <span class="chip ${r.custom?'c-ember':'c-mute'}">${r.custom?'Custom':'Built-in'}</span></div>
+      <p>${esc(r.d)}</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip c-teal">${KINDS[r.kind]}</span><span class="chip c-mute">Scope: ${esc(r.scope)}</span><span class="chip c-mute num">${users} user${users===1?'':'s'}</span></div>
+      <div class="acts"><button class="btn tiny ghost" data-dup="${r.id}" ${dis('cfg.access')}>Duplicate</button>
+       <button class="btn tiny ghost" data-jump="${r.id}|checkin.own">Permissions</button>
+       ${r.custom?`<button class="btn tiny danger" data-delrole="${r.id}" ${dis('cfg.access')}>Delete</button>`:''}</div></div>`;}).join('');
+  const assign=S.users.map((u,i)=>{
+    const opts=S.published.roles.map(r=>{const ok=can(S.published,S.acting,'roles.assign',{...UICTX,targetHR:['employee','employer'].includes(r.kind)&&['employee','employer'].includes(role(S.published,u.role)?.kind)}).ok;
+      return `<option value="${r.id}" ${r.id===u.role?'selected':''} ${ok||r.id===u.role?'':'disabled'}>${esc(r.n)}</option>`;}).join('');
+    const tgtHR=['employee','employer'].includes(role(S.published,u.role)?.kind);
+    const any=can(S.published,S.acting,'roles.assign',{...UICTX,targetHR:tgtHR}).ok;
+    return `<tr><td><b>${esc(u.n)}</b></td><td>${esc(u.team)}</td><td><select id="ur-${i}" data-user="${i}" ${any?'':'disabled'} aria-label="Role for ${esc(u.n)}">${opts}</select></td></tr>`;}).join('');
+  const ac=can(S.published,S.acting,'roles.assign',UICTX);
+  return head('Roles & users','Eight built-in roles from the proposal. Duplicate one to make a custom role; it keeps the safety locks of the role it came from.')+ro('cfg.access')+
+  `<section class="grid g2">${cards}</section>
+   <section class="panel"><h3>People and role assignment</h3><p class="d">Takes effect immediately and is logged. ${ac.cell.v==='deny'?`${esc(rname(S.acting))} cannot assign roles.`:ac.cell.c.includes('hrRoles')?`${esc(rname(S.acting))} can assign HR-side roles only (Employee, Team Lead, HR Manager, HR Admin).`:`${esc(rname(S.acting))} can assign any role.`}</p>
+   <div class="tw"><table><tr><th>Person</th><th>Team</th><th>Role</th></tr>${assign}</table></div></section>`;
+}
+
+/* ---------- Permissions ---------- */
+function permsView(){
+  const cfg=S.draft;const sel=S.sel;const r=role(cfg,sel.role)||cfg.roles[0];S.sel.role=r.id;const perm=P(sel.perm);
+  const cell=cfg.matrix[r.id][perm.id];const lk=lockOf(r,perm.id);
+  let rows='',g='';
+  PERMS.forEach(p=>{if(p.g!==g){g=p.g;rows+=`<tr class="grouprow"><td colspan="${cfg.roles.length+1}">${g}</td></tr>`;}
+    rows+=`<tr><td class="p"><b>${p.n}</b><span>${p.d}</span></td>${cfg.roles.map(rr=>{const c=cfg.matrix[rr.id][p.id];const l=lockOf(rr,p.id);
+      return `<td><button class="cell ${c.v}" data-cell="${rr.id}|${p.id}" aria-pressed="${rr.id===r.id&&p.id===perm.id}" title="${esc(rr.n)} · ${esc(p.n)}${c.c.length?': '+c.c.map(k=>CONDS[k].n).join(' + '):''}">${l?LOCK:''}${cellLabel(c)}${c.v==='cond'?`<span class="num" style="opacity:.75">${c.c.length}</span>`:''}</button></td>`;}).join('')}</tr>`;});
+  const editor=`<div class="panel" style="position:sticky;top:12px"><span class="label">Editing</span><h3>${esc(r.n)} · ${perm.n}</h3><p class="d">${perm.d}</p>
+    <div class="seg" role="group" aria-label="Access">${['allow','cond','deny'].map(v=>`<button class="${v}" data-setv="${v}" aria-pressed="${cell.v===v}" ${lk||!mayEdit('cfg.access')?'disabled':''}>${v==='allow'?'Allow':v==='cond'?'Conditional':'Deny'}</button>`).join('')}</div>
+    ${lk?`<div class="lockbox">${LOCK}<span><b>Locked.</b> ${esc(lk.why)}</span></div>`:''}
+    ${cell.v==='cond'?`<div class="checks"><span class="label" style="margin-top:6px">All of these must be true</span>${Object.entries(CONDS).map(([k,c])=>`<label><input type="checkbox" id="cc-${k}" data-cond="${k}" ${cell.c.includes(k)?'checked':''} ${!mayEdit('cfg.access')?'disabled':''}><span>${c.n}<small>${k==='minN'?`Group has at least ${cfg.privacy.minN} people (set in Privacy)`:c.d}</small></span></label>`).join('')}</div>`:''}
+    <div style="margin-top:12px"><button class="btn tiny ghost" data-testthis="1">Test in access tester →</button></div></div>`;
+  return head('Permissions','Each cell is Allow, Deny, or Allow-if conditions are met. Locked cells are product invariants from the proposal and cannot be changed.')+ro('cfg.access')+
+  `<div class="legend"><span class="cell allow" style="width:auto">Allow</span><span class="cell cond" style="width:auto">If… n</span> conditional, n = number of conditions <span class="cell deny" style="width:auto">Deny</span><span style="display:inline-flex;gap:4px;align-items:center">${LOCK.replace('<svg','<svg width="12" height="12"')} locked</span></div>
+   <div class="split"><section class="panel"><div class="tw"><table class="mx"><tr><th>Permission</th>${cfg.roles.map(rr=>`<th class="r">${esc(rr.n)}</th>`).join('')}</tr>${rows}</table></div></section>${editor}</div>`;
+}
+
+/* ---------- Views ---------- */
+function viewsView(){
+  const cfg=S.draft;let rows='',app='';
+  VIEWS.forEach(v=>{if(v.app!==app){app=v.app;rows+=`<tr class="grouprow"><td colspan="${cfg.roles.length+1}">${app}</td></tr>`;}
+    rows+=`<tr><td><b>${v.n}</b><br><span class="muted" style="font-size:12px">Needs: ${P(v.req).n}</span></td>${cfg.roles.map(r=>{const on=cfg.views[r.id].v.includes(v.id);const bad=on&&cfg.matrix[r.id][v.req].v==='deny';
+      return `<td class="${bad?'warn':''}" title="${bad?'Permission denied: screen will be empty':''}"><input type="checkbox" id="vw-${r.id}-${v.id}" data-view="${r.id}|${v.id}" ${on?'checked':''} ${dis('cfg.access')} aria-label="${esc(r.n)}: ${v.n}"></td>`;}).join('')}</tr>`;});
+  rows+=`<tr class="grouprow"><td colspan="${cfg.roles.length+1}">Landing screen</td></tr><tr><td><b>Opens on sign-in</b></td>${cfg.roles.map(r=>`<td><select id="land-${r.id}" data-land="${r.id}" ${dis('cfg.access')} style="max-width:130px;font-size:12px">${cfg.views[r.id].v.map(id=>`<option value="${id}" ${cfg.views[r.id].land===id?'selected':''}>${esc(VIEWS.find(x=>x.id===id).n)}</option>`).join('')||'<option>—</option>'}</select></td>`).join('')}</tr>`;
+  const pr=role(cfg,S.preview)||cfg.roles[0];const pv=cfg.views[pr.id];
+  let nav='',a='';VIEWS.filter(v=>pv.v.includes(v.id)).forEach(v=>{if(v.app!==a){a=v.app;nav+=`<div class="app">${a}</div>`;}nav+=`<div class="it ${pv.land===v.id?'land':''}">${v.n}${pv.land===v.id?' · home':''}</div>`;});
+  const dataRows=['checkin.own','checkin.ind','agg.team','agg.org','reports.export','sessions.clin','notes.clin'].map(id=>{const c=cfg.matrix[pr.id][id];
+    return `<div class="vis"><span>${P(id).n}</span><b class="${c.v==='allow'?'':c.v==='cond'?'':'muted'}" style="color:${c.v==='allow'?'var(--good)':c.v==='cond'?'var(--warn)':'var(--muted)'}">${c.v==='allow'?'Full':c.v==='cond'?'Only if '+c.c.map(k=>CONDS[k].n.toLowerCase()).join(' and '):'Hidden'}</b></div>`;}).join('');
+  return head('Role views','Which screens each role sees and where they land after sign-in. A highlighted cell means the screen is on but its permission is denied.')+ro('cfg.access')+
+  `<section class="panel"><div class="tw"><table class="vx"><tr><th>Screen</th>${cfg.roles.map(r=>`<th>${esc(r.n)}</th>`).join('')}</tr>${rows}</table></div></section>
+   <section class="panel"><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px"><div><h3>Preview as role</h3><p class="d" style="margin:0">Navigation and data visibility this role gets from the draft.</p></div>
+     <select id="preview" aria-label="Preview role">${cfg.roles.map(r=>`<option value="${r.id}" ${r.id===pr.id?'selected':''}>${esc(r.n)}</option>`).join('')}</select></div>
+     <div class="preview"><div class="pn"><b>${esc(pr.n)}</b>${nav||'<span class="muted">No screens</span>'}</div><div class="pb"><span class="label">Data visibility</span>${dataRows}</div></div></section>`;
+}
+
+/* ---------- Boost rules ---------- */
+function condRow(c,path,disabled,join){
+  return `<div class="cond">${join?`<span class="join">${join}</span>`:''}
+   <select data-cf="${path}" ${disabled}>${Object.entries(FIELDS).map(([k,n])=>`<option value="${k}" ${c.f===k?'selected':''}>${n}</option>`).join('')}</select>
+   <select data-cop="${path}" ${disabled}>${Object.entries(OPS).map(([k,n])=>`<option value="${k}" ${c.op===k?'selected':''}>${n}</option>`).join('')}</select>
+   <select data-cv="${path}" ${disabled}>${[1,2,3,4,5].map(v=>`<option ${+c.v===v?'selected':''}>${v}</option>`).join('')}</select>
+   <button class="btn tiny danger" data-cdel="${path}" ${disabled} aria-label="Remove condition">✕</button></div>`;
+}
+function rulesView(){
+  const cfg=S.draft,d=dis('cfg.clinical');
+  const list=cfg.rules.map((r,i)=>`<div class="rule ${r.on?'':'off'}">
+    <div class="rh"><span class="rid">${r.id}</span><input type="text" id="rl-${i}" data-rlabel="${i}" value="${esc(r.n)}" ${d} aria-label="Rule name">
+     <label style="display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:600"><input class="sw" type="checkbox" id="ron-${i}" data-ron="${i}" ${r.on?'checked':''} ${d}>On</label>
+     <button class="btn tiny ghost" data-rmove="${i}|-1" ${d||i===0?'disabled':''} aria-label="Move up">↑</button><button class="btn tiny ghost" data-rmove="${i}|1" ${d||i===cfg.rules.length-1?'disabled':''} aria-label="Move down">↓</button>
+     <button class="btn tiny danger" data-rdel="${i}" ${d}>Delete</button></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px"><span class="label">When</span>
+     ${r.c.length>1?`<select id="rm-${i}" data-rm="${i}" ${d}><option value="all" ${r.m==='all'?'selected':''}>all match</option><option value="any" ${r.m==='any'?'selected':''}>any matches</option></select>`:''}
+     ${r.c.length?'':'<span class="chip c-mute">Always (catch-all)</span>'}</div>
+    ${r.c.map((c,j)=>condRow(c,`r|${i}|${j}`,d,j?(r.m==='all'?'AND':'OR'):'')).join('')}
+    <div><button class="btn tiny ghost" data-cadd="r|${i}" ${d}>+ Condition</button></div>
+    <div><span class="label">Serve, in order</span><div class="picks" style="margin-top:6px">${Object.entries(BOOSTS).map(([k,n])=>{const ix=r.p.indexOf(k);return `<button class="pk" data-pick="${i}|${k}" aria-pressed="${ix>=0}" ${d}>${ix>=0?`<span class="ord">${ix+1}</span>`:''}${n}</button>`;}).join('')}</div></div></div>`).join('');
+  const sm=S.sim,res=pickBoost(cfg,sm,sm.yday),rg=riskGroup(cfg,sm),run=rg>=0?+sm.prior+1:0,fires=run>=cfg.guard.days;
+  return head('Boost rules','Evaluated top to bottom; the first active rule that matches serves the first Boost in its list that wasn’t served yesterday. Owned by the clinical team.')+ro('cfg.clinical')+
+  `<div class="split"><section style="display:flex;flex-direction:column;gap:10px">${list}<button class="btn ghost" data-radd="1" ${d}>+ Add rule</button></section>
+   <section class="panel sim" style="position:sticky;top:12px"><span class="label">Simulator · draft rules</span><h3>Try a check-in</h3>
+    ${['energy','stress','sleep'].map(k=>`<div class="row"><span>${FIELDS[k]}</span><input type="range" min="1" max="5" id="sim-${k}" data-sim="${k}" value="${sm[k]}"><b class="num" id="simv-${k}">${sm[k]}</b></div>`).join('')}
+    <label class="field"><span>Yesterday's Boost</span><select id="sim-yday" data-simy="1"><option value="">None</option>${Object.entries(BOOSTS).map(([k,n])=>`<option value="${k}" ${sm.yday===k?'selected':''}>${n}</option>`).join('')}</select></label>
+    <label class="field"><span>Heavy days in a row before today</span><input type="number" id="sim-prior" min="0" max="6" data-simp="1" value="${sm.prior}"></label>
+    <div class="out" id="simout">${simOut(cfg,sm,res,rg,run,fires)}</div></section></div>`;
+}
+function simOut(cfg,sm,res,rg,run,fires){
+  return `<div><span>Matched rule</span><b>${res.rule?res.rule.id+' · '+esc(res.rule.n):'None'}</b></div>
+   <div><span>Boost served</span><b>${res.boost?BOOSTS[res.boost]:'None'}</b></div>
+   <div><span>Heavy day</span><b style="color:${rg>=0?'var(--ember)':'var(--good)'}">${rg>=0?'Yes · group '+(rg+1):'No'}</b></div>
+   <div><span>Heavy days in a row</span><b class="num">${run} of ${cfg.guard.days}</b></div>
+   <div><span>Support offer</span><b style="color:${fires?'var(--ember)':'var(--muted)'}">${fires?'Counsellor offered':'Not needed'}</b></div>`;
+}
+
+/* ---------- Risk & guardrail ---------- */
+function guardView(){
+  const cfg=S.draft,d=dis('cfg.clinical'),g=cfg.guard;
+  const groups=cfg.risk.map((grp,i)=>`${i?'<div class="orsep">OR</div>':''}<div class="group"><div style="display:flex;justify-content:space-between;align-items:center"><span class="label">Group ${i+1} · all must match</span><button class="btn tiny danger" data-gdel="${i}" ${d}>Remove group</button></div>
+    ${grp.map((c,j)=>condRow(c,`g|${i}|${j}`,d,j?'AND':'')).join('')}<div><button class="btn tiny ghost" data-cadd="g|${i}" ${d}>+ Condition</button></div></div>`).join('');
+  const sentence=cfg.risk.map(gp=>gp.map(condText).join(' and ')).filter(Boolean).join(', or ');
+  return head('Heavy days & support','When a check-in counts as a heavy day, and when the app gently offers a counsellor. These are clinical safety settings.')+ro('cfg.clinical')+
+  `<div class="split"><section class="panel"><h3>Heavy day</h3><p class="d">A check-in counts as a heavy day if any group matches.</p>${groups}
+     <div style="margin-top:10px"><button class="btn tiny ghost" data-gadd="1" ${d}>+ OR group</button></div>
+     <p class="d" style="margin:12px 0 0"><b style="color:var(--ink)">Reads as:</b> ${esc(sentence||'never')}.</p></section>
+   <section class="panel"><h3>Support offer</h3>
+     <div class="grid" style="margin-top:8px">
+      <label class="field"><span>Heavy days in a row before offering support</span><input type="number" id="gd-days" min="2" max="7" data-guard="days" value="${g.days}" ${d}><small>Proposal: 3. Allowed range 2–7.</small></label>
+      <label class="field"><span>"Not now" hides the offer for</span><select id="gd-snooze" data-guard="snooze" ${d}><option value="day" ${g.snooze==='day'?'selected':''}>The rest of the day</option><option value="2days" ${g.snooze==='2days'?'selected':''}>2 days</option><option value="never" ${g.snooze==='never'?'selected':''}>Can't be hidden</option></select></label>
+      <label class="field"><span>A booking resolves the offer for</span><select id="gd-res" data-guard="resolveDays" ${d}>${[1,3,7,14].map(n=>`<option value="${n}" ${+g.resolveDays===n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}</select></label>
+      <label class="field"><span>Session length offered</span><select id="gd-sess" data-guard="session" ${d}>${[30,45,60].map(n=>`<option value="${n}" ${+g.session===n?'selected':''}>${n} minutes</option>`).join('')}</select></label>
+      <label class="field"><span>Emergency number shown</span><input type="text" id="gd-em" data-guard="emergency" value="${esc(g.emergency)}" ${d}><small>Bangladesh national emergency: 999.</small></label>
+      <div class="field"><span>Show the offer on</span><div style="display:flex;gap:12px">${['Today','Support','Push notification'].map(s=>`<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="gs-${s.replace(' ','')}" data-surf="${s}" ${g.surfaces.includes(s)?'checked':''} ${d}>${s}</label>`).join('')}</div></div>
+     </div>
+     <div class="toggle"><div><b>Notify HR when support is offered</b><small>Locked off. HR only sees the anonymised conversion rate.</small></div><input class="sw" type="checkbox" disabled aria-label="Notify HR (locked off)"></div>
+   </section></div>`;
+}
+
+/* ---------- Privacy ---------- */
+function privacyView(){
+  const cfg=S.draft,d=dis('cfg.privacy'),p=cfg.privacy;
+  return head('Privacy & data','Anonymisation, retention and export rules. The minimum group size also drives every "Group ≥ minimum size" permission condition.')+ro('cfg.privacy')+
+  `<section class="grid g2"><div class="panel"><h3>Anonymisation</h3>
+    <label class="field" style="margin-top:8px"><span>Minimum group size</span><input type="number" id="pv-min" min="5" max="50" data-priv="minN" value="${p.minN}" ${d}><small>Groups smaller than this are hidden in every HR and clinical aggregate. Floor 5, proposal 10.</small></label>
+    <div class="toggle"><div><b>Exports are aggregate-only</b><small>Locked on. No names, IDs or free text in any export.</small></div><input class="sw" type="checkbox" checked disabled aria-label="Aggregate-only exports (locked on)"></div>
+    <div class="toggle"><div><b>Suppress free-text in aggregates</b><small>Library searches and notes never reach dashboards.</small></div><input class="sw" type="checkbox" id="pv-free" data-privb="suppressFree" ${p.suppressFree?'checked':''} ${d}></div></div>
+   <div class="panel"><h3>Retention & reminders</h3>
+    <label class="field" style="margin-top:8px"><span>Keep individual check-ins for</span><select id="pv-ret" data-priv="retention" ${d}>${[90,180,365,730].map(n=>`<option value="${n}" ${+p.retention===n?'selected':''}>${n} days</option>`).join('')}</select><small>After this, only anonymised aggregates are kept.</small></label>
+    <div class="toggle"><div><b>Daily check-in reminder</b><small>Employees opt in from the app.</small></div><input class="sw" type="checkbox" id="pv-rem" data-privb="reminderOptIn" ${p.reminderOptIn?'checked':''} ${d}></div>
+    <label class="field"><span>Default reminder time</span><input type="text" id="pv-time" data-priv="reminder" value="${esc(p.reminder)}" ${d}><small>Lunch is peak check-in time (12:30–14:00).</small></label></div>
+   <div class="panel"><h3>Security baseline</h3><p class="d">Fixed by the platform, shown for reference.</p>
+    <div class="vis"><span>Encryption at rest</span><b>AES-256</b></div><div class="vis"><span>In transit</span><b>TLS 1.3</b></div><div class="vis"><span>Access model</span><b>Role-based + conditions</b></div><div class="vis"><span>Compliance</span><b>Data Protection Act</b></div><div class="vis" style="border:0"><span>Break-glass review</span><b>DPO, within 72 hours</b></div></div></section>`;
+}
+
+/* ---------- Access tester ---------- */
+function testerView(){
+  const cfg=S.draft,t=S.tester,c=t.ctx;if(!role(cfg,t.role))t.role=cfg.roles[0].id;const r=can(cfg,t.role,t.perm,c);const cell=r.cell;
+  const used=new Set(cell.v==='cond'?cell.c:[]);
+  const ctxCtl=[['own','Record belongs to them'],['sameTeam','Same team they lead / belong to'],['consent','Employee consented or booked'],['assigned','They are the assigned clinician'],['aggregate','Output is aggregated, no identifiers'],['sameOrg','Same client organisation'],['targetHR','Target role is HR-side'],['secondApprover','A different role made the change']]
+   .map(([k,n])=>{const ck=Object.keys(CONDS).find(x=>CONDS[x].ctx===k);return `<label style="display:flex;gap:8px;align-items:center;${used.has(ck)?'font-weight:700':''}"><input type="checkbox" id="tc-${k}" data-tctx="${k}" ${c[k]?'checked':''}>${n}</label>`;}).join('');
+  return head('Access tester','Ask "can this role do this, in this situation?" against the draft. Use it to check a change before publishing.')+
+  `<div class="split"><section class="panel"><div class="grid g2">
+     <label class="field"><span>Role</span><select id="t-role" data-trole="1">${cfg.roles.map(x=>`<option value="${x.id}" ${x.id===t.role?'selected':''}>${esc(x.n)}</option>`).join('')}</select></label>
+     <label class="field"><span>Permission</span><select id="t-perm" data-tperm="1">${PERMS.map(p=>`<option value="${p.id}" ${p.id===t.perm?'selected':''}>${p.n}</option>`).join('')}</select></label></div>
+     <div class="label" style="margin:16px 0 8px">Situation</div><div class="grid" style="gap:8px">${ctxCtl}
+      <label class="field"><span>Group size</span><input type="number" id="t-size" min="1" max="500" data-tsize="1" value="${c.groupSize}"></label>
+      <label class="field"><span>Break-glass reason</span><input type="text" id="t-reason" data-treason="1" value="${esc(c.reason)}" placeholder="At least 10 characters"></label></div></section>
+   <section class="panel"><div class="verdict ${r.ok?'yes':'no'}"><b>${r.ok?'Allowed':'Not allowed'}</b><span>${esc(rname(t.role))} · ${P(t.perm).n}</span></div>
+     <div class="label" style="margin:14px 0 6px">Why</div>
+     ${cell.v==='allow'?`<div class="val"><i class="ok">✓</i><span>Allowed with no conditions.</span></div>`:cell.v==='deny'?`<div class="val"><i class="e">✕</i><span>Denied for this role${lockOf(role(cfg,t.role),t.perm)?' (locked invariant)':''}.</span></div>`:
+      cell.c.map(k=>`<div class="val"><i class="${r.unmet.includes(k)?'e':'ok'}">${r.unmet.includes(k)?'✕':'✓'}</i><span><b>${CONDS[k].n}</b><br><span class="muted">${k==='minN'?`Group of ${c.groupSize} vs minimum ${cfg.privacy.minN}`:CONDS[k].d}</span></span></div>`).join('')}
+     <div style="margin-top:12px"><button class="btn tiny ghost" data-jump="${t.role}|${t.perm}">Edit this permission →</button></div></section></div>`;
+}
+
+/* ---------- Publish & audit ---------- */
+function publishView(errs){
+  const e=errs.filter(x=>x.lv==='e');
+  const secs=[['roles','Roles'],['matrix','Permissions'],['views','Role views'],['rules','Boost rules'],['risk','Heavy day'],['guard','Support offer'],['privacy','Privacy']];
+  const changed=secs.filter(([k])=>JSON.stringify(S.draft[k])!==JSON.stringify(S.published[k]));
+  const mp=mayPublish();
+  const canSubmit=dirty()&&!S.pending&&!e.length&&(mayEdit('cfg.access')||mayEdit('cfg.clinical')||mayEdit('cfg.privacy'));
+  return head('Publish & audit','Drafts go live only after review by a second role. Every change and every published version is logged.')+
+  `<section class="grid g2"><div class="panel"><h3>Draft</h3>
+    ${!dirty()?`<p class="d">No changes. v${S.version} is live.</p>`:`<p class="d">${changed.length} area${changed.length>1?'s':''} changed: ${changed.map(c=>c[1]).join(', ')}.</p>`}
+    ${S.pending?`<p class="d"><span class="chip c-warn">In review</span> Submitted by ${esc(S.pending.by)} at ${esc(S.pending.at)}.</p>`:''}
+    ${e.length?`<p class="d" style="color:var(--crit)">${e.length} error${e.length>1?'s':''} must be fixed before submitting.</p>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+     <button class="btn" data-act="submit" ${canSubmit?'':'disabled'}>Submit for review</button>
+     <button class="btn ember" data-act="publish" ${mp.ok&&!e.length?'':'disabled'}>Approve & publish v${S.version+1}</button>
+     <button class="btn danger" data-act="discard" ${dirty()?'':'disabled'}>Discard draft</button></div>
+    <p class="d" style="margin:10px 0 0">${dirty()&&!mp.ok?esc(mp.why):''} Tip: switch "Acting as" at the top to approve as another role.</p></div>
+   <div class="panel"><h3>Versions</h3><div class="log">${S.history.slice().reverse().map(h=>`<div class="e"><b class="num">v${h.v}</b><span class="muted">${esc(h.at)}</span><span>${esc(h.note)} · ${esc(h.by)}</span></div>`).join('')}</div>
+    <div style="margin-top:10px"><button class="btn tiny danger" data-act="reset">Reset prototype to proposal defaults</button></div></div></section>
+   <section class="panel"><h3>Audit log</h3>${mayEdit('audit.read')?`<div class="log">${S.audit.slice(0,40).map(a=>`<div class="e"><span class="muted num">${esc(a.at)}</span><b>${esc(a.by)}</b><span>${esc(a.a)}${a.d?` <span class="muted">· ${esc(a.d)}</span>`:''}</span></div>`).join('')}</div>`:`<div class="ro">${LOCK}<span>${esc(rname(S.acting))} cannot read the audit log.</span></div>`}</section>
+   <section class="panel"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><div><h3>Configuration as JSON</h3><p class="d" style="margin:0">The draft, ready to hand to engineering.</p></div><button class="btn tiny ghost" data-act="copy">Copy JSON</button></div>
+    <pre class="json" id="json">${esc(JSON.stringify(exportCfg(S.draft),null,2))}</pre></section>`;
+}
+function exportCfg(cfg){
+  return{version:S.version+(dirty()?1:0),status:dirty()?'draft':'live',
+    roles:cfg.roles.map(r=>({id:r.id,name:r.n,kind:r.kind,scope:r.scope,custom:!!r.custom,landing:cfg.views[r.id].land,views:cfg.views[r.id].v,
+      permissions:Object.fromEntries(PERMS.map(p=>{const c=cfg.matrix[r.id][p.id];return[p.id,c.v==='cond'?{allow_if:c.c}:c.v];}))})),
+    conditions:Object.fromEntries(Object.entries(CONDS).map(([k,c])=>[k,c.d])),
+    boost_rules:cfg.rules.map(r=>({id:r.id,name:r.n,enabled:r.on,match:r.m,when:r.c.map(c=>({field:c.f,op:c.op,value:+c.v})),serve:r.p,skip_if_served_yesterday:true})),
+    risk_day:{any_of:cfg.risk.map(g=>({all_of:g.map(c=>({field:c.f,op:c.op,value:+c.v}))}))},
+    guardrail:{trigger_consecutive_risk_days:+cfg.guard.days,snooze:cfg.guard.snooze,resolve_after_booking_days:+cfg.guard.resolveDays,session_minutes:+cfg.guard.session,surfaces:cfg.guard.surfaces,emergency_number:cfg.guard.emergency,notify_hr:false},
+    privacy:{min_group_size:+cfg.privacy.minN,retention_days:+cfg.privacy.retention,exports_aggregate_only:true,suppress_free_text:cfg.privacy.suppressFree,reminder:{opt_in:cfg.privacy.reminderOptIn,default_time:cfg.privacy.reminder}}};
+}
+
+/* ================= events ================= */
+function path(s){const [t,i,j]=s.split('|');return{t,i:+i,j:+j};}
+function condAt(cfg,s){const p=path(s);return p.t==='r'?cfg.rules[p.i].c[p.j]:cfg.risk[p.i][p.j];}
+document.addEventListener('change',e=>{
+  const el=e.target,ds=el.dataset;
+  if(el.id==='acting'){S.acting=el.value;log('Switched role','Now acting as '+rname(el.value));render();return;}
+  if(ds.rename){const v=el.value.trim()||'Custom role';edit('roles',c=>{role(c,ds.rename).n=v;},'Renamed role',v);return;}
+  if(ds.user!==undefined){const u=S.users[+ds.user],from=u.role;
+    const tr=role(S.published,el.value);const ok=can(S.published,S.acting,'roles.assign',{...UICTX,targetHR:['employee','employer'].includes(tr.kind)&&['employee','employer'].includes(role(S.published,from).kind)}).ok;
+    if(!ok){toast('Not allowed for your role.');render();return;}
+    u.role=el.value;log('Assigned role',`${u.n}: ${rname(from)} → ${rname(el.value)}`);render();toast(`${u.n} is now ${rname(el.value)}`);return;}
+  if(ds.cond){const k=ds.cond,on=el.checked;edit('perms',c=>{const cell=c.matrix[S.sel.role][S.sel.perm];cell.c=on?[...new Set([...cell.c,k])]:cell.c.filter(x=>x!==k);if(!cell.c.length)cell.v='allow';},`${on?'Added':'Removed'} condition`,`${rname(S.sel.role)} · ${P(S.sel.perm).n} · ${CONDS[k].n}`);return;}
+  if(ds.view){const [r,v]=ds.view.split('|');const on=el.checked;edit('views',c=>{const vv=c.views[r];vv.v=on?[...vv.v,v]:vv.v.filter(x=>x!==v);vv.v=VIEWS.map(x=>x.id).filter(id=>vv.v.includes(id));if(!vv.v.includes(vv.land))vv.land=vv.v[0]||'';},`${on?'Showed':'Hid'} screen`,`${rname(r)} · ${VIEWS.find(x=>x.id===v).n}`);return;}
+  if(ds.land){edit('views',c=>{c.views[ds.land].land=el.value;},'Changed landing screen',`${rname(ds.land)} → ${VIEWS.find(x=>x.id===el.value).n}`);return;}
+  if(el.id==='preview'){S.preview=el.value;render();return;}
+  if(ds.rlabel!==undefined){edit('rules',c=>{c.rules[+ds.rlabel].n=el.value.trim()||'Untitled rule';},'Renamed rule',el.value);return;}
+  if(ds.ron!==undefined){const i=+ds.ron;edit('rules',c=>{c.rules[i].on=el.checked;},el.checked?'Enabled rule':'Disabled rule',S.draft.rules[i].id);return;}
+  if(ds.rm!==undefined){edit('rules',c=>{c.rules[+ds.rm].m=el.value;},'Changed rule matching',S.draft.rules[+ds.rm].id+' → '+el.value);return;}
+  if(ds.cf||ds.cop||ds.cv){const s=ds.cf||ds.cop||ds.cv,k=ds.cf?'f':ds.cop?'op':'v',sec=s[0]==='r'?'rules':'guard';
+    edit(sec,c=>{condAt(c,s)[k]=k==='v'?+el.value:el.value;},'Edited condition',(sec==='rules'?S.draft.rules[path(s).i].id:'Risk group '+(path(s).i+1))+' · '+condText(condAt(S.draft,s)));return;}
+  if(ds.guard){const k=ds.guard;let v=el.value;if(k==='days'){v=Math.max(2,Math.min(7,+v||3));}edit('guard',c=>{c.guard[k]=['days','resolveDays','session'].includes(k)?+v:v;},'Changed guardrail',`${k} → ${v}`);return;}
+  if(ds.surf){const s=ds.surf,on=el.checked;edit('guard',c=>{c.guard.surfaces=on?[...c.guard.surfaces,s]:c.guard.surfaces.filter(x=>x!==s);},'Changed offer surfaces',`${on?'+':'−'} ${s}`);return;}
+  if(ds.priv){const k=ds.priv;let v=el.value;if(k==='minN')v=Math.max(5,Math.min(50,+v||10));edit('privacy',c=>{c.privacy[k]=k==='minN'||k==='retention'?+v:v;},'Changed privacy setting',`${k} → ${v}`);return;}
+  if(ds.privb){edit('privacy',c=>{c.privacy[ds.privb]=el.checked;},'Changed privacy setting',`${ds.privb} → ${el.checked?'on':'off'}`);return;}
+  if(ds.simy){S.sim.yday=el.value;render();return;}
+  if(ds.simp){S.sim.prior=Math.max(0,Math.min(6,+el.value||0));render();return;}
+  if(ds.trole){S.tester.role=el.value;render();return;}
+  if(ds.tperm){S.tester.perm=el.value;render();return;}
+  if(ds.tctx){S.tester.ctx[ds.tctx]=el.checked;render();return;}
+  if(ds.tsize){S.tester.ctx.groupSize=+el.value||0;render();return;}
+  if(ds.treason){S.tester.ctx.reason=el.value;render();return;}
+});
+document.addEventListener('input',e=>{
+  const ds=e.target.dataset;
+  if(ds.sim){S.sim[ds.sim]=+e.target.value;$('#simv-'+ds.sim).textContent=e.target.value;const cfg=S.draft,sm=S.sim,res=pickBoost(cfg,sm,sm.yday),rg=riskGroup(cfg,sm),run=rg>=0?+sm.prior+1:0;
+    $('#simout').innerHTML=simOut(cfg,sm,res,rg,run,run>=cfg.guard.days);save();}
+});
+document.addEventListener('click',e=>{
+  const el=e.target.closest('button');if(!el||el.disabled)return;const ds=el.dataset;
+  if(ds.sec){S.sec=ds.sec;render();window.scrollTo(0,0);return;}
+  if(ds.jump||ds.cell){const [r,p]=(ds.jump||ds.cell).split('|');S.sel={role:r,perm:p};if(ds.jump){S.sec='perms';window.scrollTo(0,0);}render();return;}
+  if(ds.setv){const v=ds.setv;edit('perms',c=>{const cell=c.matrix[S.sel.role][S.sel.perm];cell.v=v;if(v!=='cond')cell.c=[];else if(!cell.c.length)cell.c=['ownOrg'];},'Changed permission',`${rname(S.sel.role)} · ${P(S.sel.perm).n} → ${v}`);return;}
+  if(ds.testthis){S.tester.role=S.sel.role;S.tester.perm=S.sel.perm;S.sec='tester';render();window.scrollTo(0,0);return;}
+  if(ds.dup){const src=role(S.draft,ds.dup);const id='custom-'+Date.now().toString(36);
+    edit('roles',c=>{c.roles.push({...clone(role(c,ds.dup)),id,n:'Copy of '+src.n,custom:true});c.matrix[id]=clone(c.matrix[ds.dup]);c.views[id]=clone(c.views[ds.dup]);},'Created custom role','Copy of '+src.n);return;}
+  if(ds.delrole){const id=ds.delrole;if(S.users.some(u=>u.role===id)){toast('Move people out of this role first.');return;}
+    edit('roles',c=>{c.roles=c.roles.filter(r=>r.id!==id);delete c.matrix[id];delete c.views[id];},'Deleted custom role',rname(id));return;}
+  if(ds.rmove){const [i,dlt]=ds.rmove.split('|').map(Number);edit('rules',c=>{const a=c.rules;[a[i],a[i+dlt]]=[a[i+dlt],a[i]];},'Reordered rules',S.draft.rules[i].id+(dlt<0?' up':' down'));return;}
+  if(ds.rdel!==undefined){const i=+ds.rdel,id=S.draft.rules[i].id;edit('rules',c=>{c.rules.splice(i,1);},'Deleted rule',id);return;}
+  if(ds.radd){edit('rules',c=>{const n=1+Math.max(0,...c.rules.map(r=>+r.id.slice(1)||0));const at=c.rules.length&&!c.rules[c.rules.length-1].c.length?c.rules.length-1:c.rules.length;c.rules.splice(at,0,{id:'R'+n,n:'New rule',on:true,m:'all',c:[{f:'stress',op:'>=',v:3}],p:['cha']});},'Added rule','Inserted above the catch-all');return;}
+  if(ds.cadd){const p=path(ds.cadd);const sec=p.t==='r'?'rules':'guard';edit(sec,c=>{(p.t==='r'?c.rules[p.i].c:c.risk[p.i]).push({f:'stress',op:'>=',v:3});},'Added condition',p.t==='r'?S.draft.rules[p.i].id:'Risk group '+(p.i+1));return;}
+  if(ds.cdel){const p=path(ds.cdel);const sec=p.t==='r'?'rules':'guard';edit(sec,c=>{(p.t==='r'?c.rules[p.i].c:c.risk[p.i]).splice(p.j,1);},'Removed condition',p.t==='r'?S.draft.rules[p.i].id:'Risk group '+(p.i+1));return;}
+  if(ds.pick){const [i,k]=ds.pick.split('|');edit('rules',c=>{const r=c.rules[+i];r.p=r.p.includes(k)?r.p.filter(x=>x!==k):[...r.p,k];},'Changed Boost options',`${S.draft.rules[+i].id} · ${BOOSTS[k]}`);return;}
+  if(ds.gadd){edit('guard',c=>{c.risk.push([{f:'stress',op:'>=',v:4}]);},'Added risk group');return;}
+  if(ds.gdel!==undefined){edit('guard',c=>{c.risk.splice(+ds.gdel,1);},'Removed risk group','Group '+(+ds.gdel+1));return;}
+  const a=ds.act;
+  if(a==='submit'){S.pending={by:rname(S.acting),byRole:S.acting,at:stamp()};log('Submitted for review',`v${S.version+1}`);render();toast('Submitted. A different role must approve.');}
+  else if(a==='publish'){const mp=mayPublish();if(!mp.ok){toast(mp.why);return;}const changed=[['roles','Roles'],['matrix','Permissions'],['views','Views'],['rules','Boost rules'],['risk','Heavy day'],['guard','Support offer'],['privacy','Privacy']].filter(([k])=>JSON.stringify(S.draft[k])!==JSON.stringify(S.published[k])).map(x=>x[1]);
+    S.version++;S.published=clone(S.draft);S.history.push({v:S.version,at:stamp(),by:`${S.pending.by} → approved by ${rname(S.acting)}`,note:'Changed '+changed.join(', ')});S.pending=null;log('Published v'+S.version,changed.join(', '));render();toast('v'+S.version+' is live');}
+  else if(a==='discard'){S.draft=clone(S.published);S.pending=null;log('Discarded draft');render();toast('Draft discarded');}
+  else if(a==='reset'){S=freshState();render();toast('Reset to proposal defaults');}
+  else if(a==='copy'){const txt=$('#json').textContent;const sel=()=>{const r=document.createRange();r.selectNodeContents($('#json'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Selected. Press Ctrl/Cmd+C to copy.');};
+    try{navigator.clipboard.writeText(txt).then(()=>toast('JSON copied')).catch(sel);}catch(err){sel();}}
+});
+render();
+})();
+</script>
+<script>
+(function(){var r=document.documentElement,b=document.getElementById('modebtn'),m=null;
+try{m=localStorage.getItem('dailyboost-mode')}catch(e){}
+if(m)r.setAttribute('data-theme',m);
+function cur(){return r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function paint(){var d=cur()==='dark';b.innerHTML=(d?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1 1M17.4 17.4l1 1M5.6 18.4l1-1M17.4 6.6l1-1"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>')+'<span>'+(d?'Day mode':'Dusk mode')+'</span>';b.setAttribute('aria-label',d?'Switch to day mode':'Switch to dusk mode')}
+b.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('dailyboost-mode',n)}catch(e){}paint()});paint();})();
+</script>
+
+</body></html>
